@@ -23,7 +23,7 @@ class ProgressCircle : public QWidget
     Q_PROPERTY(int visibleValue READ visibleValue WRITE setVisibleValue)
 
 public:
-    explicit ProgressCircle(QWidget *parent = 0);
+    explicit ProgressCircle(QWidget *parent = nullptr);
 
     int value() const;
 

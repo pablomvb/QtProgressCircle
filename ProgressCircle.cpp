@@ -7,6 +7,13 @@
 #include "ProgressCircle.h"
 #include <QPainter>
 #include <QPixmapCache>
+#include <cmath>
+#include <QDebug>
+
+bool areEqual(qreal a, qreal b)
+{
+    return fabs(a-b) < 0.000001;
+}
 
 ProgressCircle::ProgressCircle(QWidget *parent) :
     QWidget(parent),
@@ -94,7 +101,7 @@ void ProgressCircle::setInnerRadius(qreal innerRadius)
     if(innerRadius > 1.0) innerRadius = 1.0;
     if(innerRadius < 0.0) innerRadius = 0.0;
 
-    if(mInnerRadius != innerRadius)
+    if(!areEqual(mInnerRadius,innerRadius))
     {
         mInnerRadius = innerRadius;
         update();
@@ -106,7 +113,7 @@ void ProgressCircle::setOuterRadius(qreal outerRadius)
     if(outerRadius > 1.0) outerRadius = 1.0;
     if(outerRadius < 0.0) outerRadius = 0.0;
 
-    if(mOuterRadius != outerRadius)
+    if(!areEqual(mOuterRadius,outerRadius))
     {
         mOuterRadius = outerRadius;
         update();
@@ -147,7 +154,7 @@ void ProgressCircle::paintEvent(QPaintEvent *)
 
     // Draw pixmap at center of item
     QPainter painter(this);
-    painter.drawPixmap( 0.5 * ( width() - pixmap.width() ), 0.5 * ( height() - pixmap.height() ), pixmap );
+    painter.drawPixmap( ( width() - pixmap.width() )/2, ( height() - pixmap.height() )/2, pixmap );
 }
 
 void ProgressCircle::setInfiniteAnimationValue(qreal value)
@@ -175,8 +182,7 @@ QString ProgressCircle::key() const
             .arg(mOuterRadius)
             .arg(width())
             .arg(height())
-            .arg(mColor.rgb())
-            ;
+            .arg(mColor.rgb());
 }
 
 QPixmap ProgressCircle::generatePixmap() const
@@ -203,15 +209,15 @@ QPixmap ProgressCircle::generatePixmap() const
     if(mMaximum == 0)
     {
         //draw as infinite process
-        int startAngle = -mInfiniteAnimationValue * 360 * 16;
-        int spanAngle = 0.15 * 360 * 16;
+        int startAngle = qRound(-mInfiniteAnimationValue * 360 * 16);
+        int spanAngle = qRound(0.15 * 360 * 16);
         painter.drawPie(rect, startAngle, spanAngle);
     }
     else
     {
         int value = qMin(mVisibleValue, mMaximum);
         int startAngle = 90 * 16;
-        int spanAngle = -qreal(value) * 360 * 16 / mMaximum;
+        int spanAngle = qRound(-qreal(value) * 360 * 16 / mMaximum);
 
         painter.drawPie(rect, startAngle, spanAngle);
     }
